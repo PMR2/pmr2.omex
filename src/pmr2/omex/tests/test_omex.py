@@ -10,7 +10,7 @@ demo_omex = '''<?xml version='1.0' encoding='utf-8' standalone='yes'?>
   <content location="./BorisEJB.xml"
     format="http://identifiers.org/combine.specifications/sbml" />
   <content location="./paper/Kholodenko2000.pdf"
-    format="application/pdf" />
+    format="http://purl.org/NET/mediatypes/application/pdf" />
   <content location="http://www.ebi.ac.uk/biomodels-main/BIOMD0000000010"
     format="http://identifiers.org/combine.specifications/sbml" />
   <content location="./metadata.rdf"
