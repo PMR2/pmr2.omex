@@ -6,7 +6,11 @@ from lxml import etree
 from pmr2.app.workspace.exceptions import StorageArchiveError
 from pmr2.app.workspace.exceptions import PathNotFoundError
 
-def build_omex(storage):
+def build_omex(storage, manifest_path='manifest.xml'):
+    """
+    Build an archive from a storage backend and a path.
+    """
+
     try:
         raw_manifest = storage.file('manifest.xml')
     except PathNotFoundError:
