@@ -5,9 +5,10 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import IntegrationTesting
 from plone.testing import z2
 
-from pmr2.app.workspace.tests import layer
 from pmr2.app.workspace.content import Workspace
 from pmr2.app.workspace.interfaces import IStorageUtility
+
+from pmr2.app.workspace.tests import layer
 
 
 class OmexBaseLayer(PloneSandboxLayer):
@@ -21,8 +22,7 @@ class OmexBaseLayer(PloneSandboxLayer):
 
     def setUpPloneSite(self, portal):
         """
-        Apply the default pmr2.omex profile and ensure that the settings
-        have the tmpdir applied in.
+        Set up the objects required for the test layer.
         """
 
         # install pmr2.omex
@@ -43,3 +43,27 @@ OMEX_BASE_FIXTURE = OmexBaseLayer()
 
 OMEX_BASE_INTEGRATION_LAYER = IntegrationTesting(
     bases=(OMEX_BASE_FIXTURE,), name="pmr2.omex:integration")
+
+
+class OmexExposureLayer(PloneSandboxLayer):
+
+    defaultBases = (OMEX_BASE_FIXTURE,)
+
+    def setUpPloneSite(self, portal):
+        """
+        """
+
+        from pmr2.app.exposure.content import ExposureContainer
+        from pmr2.app.exposure.content import Exposure
+        from pmr2.app.exposure.content import ExposureFile
+        portal['ec'] = ExposureContainer('ec')
+        portal.ec['combine_test'] = Exposure('combine_test')
+        portal.ec['combine_test'].workspace = u'/plone/workspace/omex_base'
+        portal.ec.combine_test['demo.xml'] = ExposureFile('demo.xml')
+        portal.ec.combine_test['no_omex.xml'] = ExposureFile('no_omex.xml')
+
+
+OMEX_EXPOSURE_FIXTURE = OmexExposureLayer()
+
+OMEX_EXPOSURE_INTEGRATION_LAYER = IntegrationTesting(
+    bases=(OMEX_EXPOSURE_FIXTURE,), name="pmr2.omex:exposure_integration")

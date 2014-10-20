@@ -12,7 +12,7 @@ def build_omex(storage, manifest_path='manifest.xml'):
     """
 
     try:
-        raw_manifest = storage.file('manifest.xml')
+        raw_manifest = storage.file(manifest_path)
     except PathNotFoundError:
         raise ValueError
     locations = parse_manifest(raw_manifest)
