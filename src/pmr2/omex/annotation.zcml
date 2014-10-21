@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="pmr2.omex">
+
+  <!-- Note storage -->
+
+  <adapter
+      for="pmr2.app.exposure.interfaces.IExposureFile"
+      factory=".note.OmexNoteFactory"
+      provides=".interfaces.IOmexNote"
+      name="omex"
+      />
+
+  <!-- Note Generation -->
+
+  <utility
+      name="omex"
+      component=".annotator.OmexAnnotatorFactory"
+      provides="pmr2.app.annotation.interfaces.IExposureFileAnnotator"
+      />                      
+
+  <!-- No views needed. -->
+    
+</configure>
