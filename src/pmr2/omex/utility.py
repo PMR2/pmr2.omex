@@ -1,8 +1,10 @@
 import zope.component
 from zope.interface import implementer
 
+from pmr2.app.annotation.interfaces import IExposureFileNote
 from pmr2.app.workspace.interfaces import IStorageArchiver
 from pmr2.app.workspace.interfaces import IStorage
+from pmr2.app.exposure.interfaces import IExposureSourceAdapter
 
 from .interfaces import IOmexExposureArchiver
 from .omex import build_omex
@@ -27,22 +29,33 @@ class OmexStorageArchiver(object):
 
 
 @implementer(IOmexExposureArchiver)
-class OmexExposureArchiver(object):
+class OmexExposureFileArchiver(object):
 
     label = u'COMBINE Archive'
     suffix = '.omex'
     mimetype = 'application/vnd.combine.omex'
 
-    def enabledFor(self, exposure_object, path=None):
-        storage = IStorage(exposure_object)
-        try:
-            # XXX path can be either default to like workspace, or have
-            # some other adapter that provide this info.
-            manifest = storage.file(path)
-            return True
-        except:
-            return False
+    def __init__(self, storage, path):
+        self.storage = storage
+        self.path = path
 
-    def archive(self, exposure):
-        storage = IStorage(exposure_object)
-        return build_omex(storage)
+    def __call__(self):
+        return build_omex(self.storage, self.path)
+
+
+def OmexExposureArchiverFactory(exposure_object):
+    # XXX only works with ExposureFile objects now.
+    note = zope.component.getAdapter(exposure_object, name='omex')
+    if note is None or note.path is None:
+        return None
+
+    try:
+        exposure, workspace, path = zope.component.getAdapter(
+            exposure_object, IExposureSourceAdapter).source()
+        storage = IStorage(exposure)
+        manifest = storage.file(path)
+    except:
+        return None
+
+    archiver = OmexExposureFileArchiver(storage, note.path)
+    return archiver

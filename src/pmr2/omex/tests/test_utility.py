@@ -1,9 +1,18 @@
 from unittest import TestCase, TestSuite, makeSuite
 
+from cStringIO import StringIO
+import zipfile
+
 import zope.component
 
 from pmr2.app.workspace.interfaces import IStorage
 from pmr2.app.workspace.interfaces import IStorageArchiver
+from pmr2.app.exposure.browser.browser import ExposureFileAnnotatorForm
+from pmr2.app.exposure.browser.browser import ExposureFileNoteEditForm
+from pmr2.app.settings.interfaces import IPMR2GlobalSettings
+from pmr2.app.annotation.interfaces import IExposureFileAnnotator
+
+from pmr2.testing.base import TestRequest
 
 from pmr2.omex.interfaces import IOmexExposureArchiver
 
@@ -55,12 +64,20 @@ class TestOmexExposureUtility(TestCase):
         pass
 
     def test_generate_omex_ef_with_omex(self):
-        archiver = zope.component.getAdapter(self.ef_with_omex,
-            IOmexExposureArchiver)
+        context = self.ef_with_omex
+        request = TestRequest()
+        annotator = zope.component.getUtility(IExposureFileAnnotator,
+            name='omex')(context, request)
+        annotator(data=(('path', u'demo_only.xml'),))
+
+        archiver = zope.component.getAdapter(context, IOmexExposureArchiver)
         result = archiver()
-        # XXX figure out how to grab this.
-        self.assertEqual(result.filelist,
-            ['with_omex_manifest.xml', 'with_omex.xml'])
+
+        stream = StringIO(result)
+        zf = zipfile.ZipFile(stream, mode='r')
+
+        self.assertEqual(sorted(zf.namelist()),
+            ['demo.xml', 'demo_only.xml'])
 
     def test_generate_omex_ef_no_omex(self):
         # no archiver available.
