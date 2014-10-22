@@ -1,3 +1,5 @@
+from functools import partial
+
 import zope.component
 from zope.interface import implementer
 
@@ -28,21 +30,6 @@ class OmexStorageArchiver(object):
         return build_omex(storage)
 
 
-@implementer(IOmexExposureArchiver)
-class OmexExposureFileArchiver(object):
-
-    label = u'COMBINE Archive'
-    suffix = '.omex'
-    mimetype = 'application/vnd.combine.omex'
-
-    def __init__(self, storage, path):
-        self.storage = storage
-        self.path = path
-
-    def __call__(self):
-        return build_omex(self.storage, self.path)
-
-
 def OmexExposureArchiverFactory(exposure_object):
     # XXX only works with ExposureFile objects now.
     note = zope.component.getAdapter(exposure_object, name='omex')
@@ -57,5 +44,5 @@ def OmexExposureArchiverFactory(exposure_object):
     except:
         return None
 
-    archiver = OmexExposureFileArchiver(storage, note.path)
+    archiver = partial(build_omex, storage, note.path)
     return archiver
