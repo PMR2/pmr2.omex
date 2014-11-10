@@ -64,6 +64,12 @@ class OmexExposureLayer(PloneSandboxLayer):
         portal.ec.combine_test['demo.xml'] = ExposureFile('demo.xml')
         portal.ec.combine_test['no_omex.xml'] = ExposureFile('no_omex.xml')
 
+        portal.ec['combine_test1'] = Exposure('combine_test1')
+        portal.ec['combine_test1'].commit_id = u'1'
+        portal.ec['combine_test1'].workspace = u'/plone/workspace/omex_base'
+        portal.ec.combine_test1['demo.xml'] = ExposureFile('demo.xml')
+        portal.ec.combine_test1['no_omex.xml'] = ExposureFile('no_omex.xml')
+
 
 OMEX_EXPOSURE_FIXTURE = OmexExposureLayer()
 

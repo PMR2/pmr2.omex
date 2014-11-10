@@ -22,7 +22,6 @@ from pmr2.omex.interfaces import IOmexExposureArchiver
 from pmr2.omex.testing.layer import OMEX_BASE_INTEGRATION_LAYER
 from pmr2.omex.testing.layer import OMEX_EXPOSURE_INTEGRATION_LAYER
 
-
 class TestOmexStorageUtility(TestCase):
     """
     Test Omex Core.
@@ -43,6 +42,10 @@ class TestOmexStorageUtility(TestCase):
             IStorage(self.portal.workspace.test)))
 
         target = IStorage(self.portal.workspace.omex_base)
+        self.assertFalse(utility.enabledFor(target))
+
+        # on the revision with the root manifest.xml
+        target.checkout('0')
         self.assertTrue(utility.enabledFor(target))
 
 
@@ -58,10 +61,13 @@ class TestOmexExposureUtility(TestCase):
 
         self.portal = self.layer['portal']
         self.exposure = self.portal.ec.combine_test
+        self.exposure1 = self.portal.ec.combine_test1
         # this one has the annotation to the path of manifest file.
         self.ef_with_omex = self.portal.ec.combine_test['demo.xml']
         # this one has no annotation with path to manifest file.
         self.ef_no_omex = self.portal.ec.combine_test['no_omex.xml']
+
+        self.ef_broken_manifest = self.portal.ec.combine_test1['demo.xml']
 
     def tearDown(self):
         pass
@@ -96,6 +102,22 @@ class TestOmexExposureUtility(TestCase):
             IOmexExposureArchiver)
         self.assertIsNone(archiver)
 
+    def test_generate_omex_ef_manifest_missing_file(self):
+        context = self.ef_broken_manifest
+        request = TestRequest()
+        annotator = zope.component.getUtility(IExposureFileAnnotator,
+            name='omex')(context, request)
+        annotator(data=(('path', u'all_manifest.xml'),))
+
+        archiver = zope.component.getAdapter(context, IOmexExposureArchiver)
+        self.assertRaises(StorageArchiveError, archiver)
+
+        dl = OmexExposureDownload(context, request)
+        result = dl()
+
+        self.assertTrue('Error' in result)
+        self.assertTrue('manifest.xml' in result)
+        self.assertTrue('all_manifest.xml' in result)
 
 def test_suite():
     suite = TestSuite()

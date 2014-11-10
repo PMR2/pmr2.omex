@@ -1,0 +1,7 @@
+<dl class="portalMessage error"><dt>Error</dt>
+<dd>
+The file `<strong tal:content="view/source"></strong>` specified to be
+included in the manifest file `<strong tal:content="view/manifest"></strong>`
+is missing.
+</dd>
+</dl>
