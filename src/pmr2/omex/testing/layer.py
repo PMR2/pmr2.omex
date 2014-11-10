@@ -57,7 +57,9 @@ class OmexExposureLayer(PloneSandboxLayer):
         from pmr2.app.exposure.content import Exposure
         from pmr2.app.exposure.content import ExposureFile
         portal['ec'] = ExposureContainer('ec')
+
         portal.ec['combine_test'] = Exposure('combine_test')
+        portal.ec['combine_test'].commit_id = u'0'
         portal.ec['combine_test'].workspace = u'/plone/workspace/omex_base'
         portal.ec.combine_test['demo.xml'] = ExposureFile('demo.xml')
         portal.ec.combine_test['no_omex.xml'] = ExposureFile('no_omex.xml')

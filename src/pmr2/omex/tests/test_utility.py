@@ -7,6 +7,8 @@ import zope.component
 
 from pmr2.app.workspace.interfaces import IStorage
 from pmr2.app.workspace.interfaces import IStorageArchiver
+from pmr2.app.workspace.exceptions import StorageArchiveError
+
 from pmr2.app.exposure.browser.browser import ExposureFileAnnotatorForm
 from pmr2.app.exposure.browser.browser import ExposureFileNoteEditForm
 from pmr2.app.settings.interfaces import IPMR2GlobalSettings
@@ -14,6 +16,7 @@ from pmr2.app.annotation.interfaces import IExposureFileAnnotator
 
 from pmr2.testing.base import TestRequest
 
+from pmr2.omex.browser import OmexExposureDownload
 from pmr2.omex.interfaces import IOmexExposureArchiver
 
 from pmr2.omex.testing.layer import OMEX_BASE_INTEGRATION_LAYER
@@ -76,6 +79,14 @@ class TestOmexExposureUtility(TestCase):
         stream = StringIO(result)
         zf = zipfile.ZipFile(stream, mode='r')
 
+        self.assertEqual(sorted(zf.namelist()),
+            ['demo.xml', 'demo_only.xml'])
+
+        # run again with the view.
+        dl = OmexExposureDownload(context, request)
+        result = dl()
+        stream = StringIO(result)
+        zf = zipfile.ZipFile(stream, mode='r')
         self.assertEqual(sorted(zf.namelist()),
             ['demo.xml', 'demo_only.xml'])
 

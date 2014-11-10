@@ -1,12 +1,15 @@
 import zope.interface
 import zope.schema
 
+from pmr2.app.workspace.schema import StorageFileChoice
+
 
 class IOmexNote(zope.interface.Interface):
 
-    path = zope.schema.Text(
+    path = StorageFileChoice(
         title=u'Manifest path',
         description=u'The path to the Manifest file for this piece of work.',
+        vocabulary='pmr2.vocab.manifest',
         required=False,
     )
 

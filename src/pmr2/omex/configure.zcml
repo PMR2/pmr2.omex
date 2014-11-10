@@ -1,5 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="pmr2.omex">
 
   <include file="annotation.zcml"/>
@@ -10,10 +11,23 @@
       name="omex"
       />
 
+  <utility
+      provides="pmr2.app.exposure.interfaces.IExposureDownloadTool"
+      factory=".utility.OmexExposureDownloadTool"
+      name="omex"
+      />
+
   <adapter
       for="pmr2.app.exposure.interfaces.IExposureFile"
       factory=".utility.OmexExposureArchiverFactory"
       provides=".interfaces.IOmexExposureArchiver"
+      />
+
+  <browser:page
+      for="pmr2.app.exposure.interfaces.IExposureFile"
+      name="download_omex"
+      class=".browser.OmexExposureDownload"
+      permission="zope2.View"
       />
 
 </configure>
