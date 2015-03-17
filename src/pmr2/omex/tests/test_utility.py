@@ -112,7 +112,9 @@ class TestOmexExposureUtility(TestCase):
         archiver = zope.component.getAdapter(context, IOmexExposureArchiver)
         self.assertRaises(StorageArchiveError, archiver)
 
-        dl = OmexExposureDownload(context, request)
+        # I do hate all these new fangled stuff sometimes...
+        # dl = OmexExposureDownload(context, request)
+        dl = OmexExposureDownload(context, self.layer['portal'].REQUEST)
         result = dl()
 
         self.assertTrue('Error' in result)
