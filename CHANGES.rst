@@ -1,8 +1,9 @@
 Changelog
 =========
 
-0.1-dev (unreleased)
---------------------
+0.1 - Released (2015-03-19)
+---------------------------
 
-- Package created using templer
-  [Tommy Yu]
+- Addon to PMR2 for the creation of COMBINE Archive from exposures
+- Also includes the functionality of generation of COMBINE Archive from
+  workspaces.
