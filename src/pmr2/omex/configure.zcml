@@ -17,6 +17,12 @@
       name="omex"
       />
 
+  <utility
+      provides="pmr2.app.exposure.interfaces.IExposureFileTool"
+      factory=".utility.WebCatLinkTool"
+      name="webcat_tool"
+      />
+
   <adapter
       for="pmr2.app.exposure.interfaces.IExposureFile"
       factory=".utility.OmexExposureArchiverFactory"
@@ -27,6 +33,13 @@
       for="pmr2.app.exposure.interfaces.IExposureFile"
       name="download_omex"
       class=".browser.OmexExposureDownload"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for="pmr2.app.exposure.interfaces.IExposure"
+      name="webcat_tool"
+      class=".browser.WebCatToolView"
       permission="zope2.View"
       />
 

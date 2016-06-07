@@ -8,6 +8,7 @@ from pmr2.app.workspace.interfaces import IStorageArchiver
 from pmr2.app.workspace.interfaces import IStorage
 from pmr2.app.exposure.interfaces import IExposureSourceAdapter
 from pmr2.app.exposure.interfaces import IExposureDownloadTool
+from pmr2.app.exposure.interfaces import IExposureFileTool
 
 from .interfaces import IOmexExposureArchiver
 from .omex import build_omex
@@ -70,3 +71,18 @@ def OmexExposureArchiverFactory(exposure_object):
 
     archiver = partial(build_omex, storage, note.path)
     return archiver
+
+
+@implementer(IExposureFileTool)
+class WebCatLinkTool(object):
+    """
+    Tool for comparing files.
+    """
+
+    label = u'CombineArchive Web'
+
+    def get_tool_link(self, exposure_object):
+        exposure, workspace, path = zope.component.getAdapter(
+            exposure_object, IExposureSourceAdapter).source()
+
+        return exposure.absolute_url() + '/webcat_tool'

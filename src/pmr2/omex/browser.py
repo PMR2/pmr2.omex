@@ -6,6 +6,7 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from pmr2.z3cform.page import SimplePage
 from pmr2.app.workspace.exceptions import StorageArchiveError
 from pmr2.app.exposure.interfaces import IExposureDownloadTool
+from pmr2.app.exposure.interfaces import IExposureSourceAdapter
 
 
 class OmexErrorPage(SimplePage):
@@ -45,3 +46,17 @@ class OmexExposureDownload(BrowserView):
         return content
 
 
+class WebCatToolView(SimplePage):
+
+    template = ViewPageTemplateFile('webcat_view.pt')
+    source = ''
+    manifest = ''
+
+    def webcat_link(self):
+        exposure, workspace, path = zope.component.getAdapter(
+            self.context, IExposureSourceAdapter).source()
+        target = exposure.absolute_url()
+        return (
+            'http://webcat.sems.uni-rostock.de/rest/import?remote='
+            '%s&type=git' % target
+        )
