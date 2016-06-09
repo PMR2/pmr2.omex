@@ -40,11 +40,14 @@ def parse_manifest(raw_manifest):
     })
     locations = []
     for r in raw:
-        if r.startswith('./'):
-            locations.append(r[2:])
-            continue
         if r.startswith('http://') or r.startswith('https://'):
             # ignore external resources for now
+            continue
+        if r == '.':
+            # ignore self references.
+            continue
+        if r.startswith('./'):
+            locations.append(r[2:])
             continue
         locations.append(r)
 

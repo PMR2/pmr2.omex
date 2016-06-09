@@ -121,6 +121,23 @@ class TestOmexExposureUtility(TestCase):
         self.assertTrue('manifest.xml' in result)
         self.assertTrue('all_manifest.xml' in result)
 
+    def test_generate_omex_ef_manifest_with_dir_ref(self):
+        # with the "." reference which is standard.
+        context = self.portal.ec.combine_test2['demo.xml']
+        request = TestRequest()
+        annotator = zope.component.getUtility(IExposureFileAnnotator,
+            name='omex')(context, request)
+        annotator(data=(('path', u'all_manifest.xml'),))
+
+        archiver = zope.component.getAdapter(context, IOmexExposureArchiver)
+        result = archiver()
+
+        stream = StringIO(result)
+        zf = zipfile.ZipFile(stream, mode='r')
+
+        self.assertEqual(sorted(zf.namelist()),
+            ['all_manifest.xml', 'demo.xml', 'metadata.rdf'])
+
 def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestOmexStorageUtility))
