@@ -56,25 +56,21 @@ class OmexExposureLayer(PloneSandboxLayer):
         from pmr2.app.exposure.content import ExposureContainer
         from pmr2.app.exposure.content import Exposure
         from pmr2.app.exposure.content import ExposureFile
+
         portal['ec'] = ExposureContainer('ec')
 
-        portal.ec['combine_test'] = Exposure('combine_test')
-        portal.ec['combine_test'].commit_id = u'0'
-        portal.ec['combine_test'].workspace = u'/plone/workspace/omex_base'
-        portal.ec.combine_test['demo.xml'] = ExposureFile('demo.xml')
-        portal.ec.combine_test['no_omex.xml'] = ExposureFile('no_omex.xml')
+        def _create_exposure(rev):
+            result = Exposure('combine_test' + rev)
+            result.commit_id = unicode(rev)
+            result.workspace = u'/plone/workspace/omex_base'
+            portal.ec['combine_test' + rev] = result
+            result = portal.ec['combine_test' + rev]
+            result['demo.xml'] = ExposureFile('demo.xml')
+            result['no_omex.xml'] = ExposureFile('no_omex.xml')
 
-        portal.ec['combine_test1'] = Exposure('combine_test1')
-        portal.ec['combine_test1'].commit_id = u'1'
-        portal.ec['combine_test1'].workspace = u'/plone/workspace/omex_base'
-        portal.ec.combine_test1['demo.xml'] = ExposureFile('demo.xml')
-        portal.ec.combine_test1['no_omex.xml'] = ExposureFile('no_omex.xml')
-
-        portal.ec['combine_test2'] = Exposure('combine_test2')
-        portal.ec['combine_test2'].commit_id = u'2'
-        portal.ec['combine_test2'].workspace = u'/plone/workspace/omex_base'
-        portal.ec.combine_test2['demo.xml'] = ExposureFile('demo.xml')
-        portal.ec.combine_test2['no_omex.xml'] = ExposureFile('no_omex.xml')
+        _create_exposure('0')
+        _create_exposure('1')
+        _create_exposure('2')
 
 
 OMEX_EXPOSURE_FIXTURE = OmexExposureLayer()

@@ -60,12 +60,12 @@ class TestOmexExposureUtility(TestCase):
         # get a dummy exposure with some data.
 
         self.portal = self.layer['portal']
-        self.exposure = self.portal.ec.combine_test
+        self.exposure = self.portal.ec.combine_test0
         self.exposure1 = self.portal.ec.combine_test1
         # this one has the annotation to the path of manifest file.
-        self.ef_with_omex = self.portal.ec.combine_test['demo.xml']
+        self.ef_with_omex = self.portal.ec.combine_test0['demo.xml']
         # this one has no annotation with path to manifest file.
-        self.ef_no_omex = self.portal.ec.combine_test['no_omex.xml']
+        self.ef_no_omex = self.portal.ec.combine_test0['no_omex.xml']
 
         self.ef_broken_manifest = self.portal.ec.combine_test1['demo.xml']
 
