@@ -6,26 +6,39 @@ from lxml import etree
 from pmr2.app.workspace.exceptions import StorageArchiveError
 from pmr2.app.workspace.exceptions import PathNotFoundError
 
-def build_omex(storage, manifest_path='manifest.xml'):
+def extract_storage_manifest(storage, manifest_path='manifest.xml'):
     """
-    Build an archive from a storage backend and a path.
+    Extract the manifest from a storage
     """
 
     try:
         raw_manifest = storage.file(manifest_path)
     except PathNotFoundError:
         raise ValueError
-    locations = parse_manifest(raw_manifest)
+    return parse_manifest(raw_manifest)
+
+def build_omex(storage, manifest_path='manifest.xml'):
+    """
+    Build an archive from a storage backend and a path.
+    """
+
+    locations = extract_storage_manifest(storage, manifest_path)
     return _process(storage.file, locations)
 
 def _process(getter, locations):
+    def generate_filemap():
+        for path in locations:
+            try:
+                yield path, getter(path)
+            except (PathNotFoundError, KeyError):
+                raise StorageArchiveError(path)
+
+    return _create_zip(generate_filemap())
+
+def _create_zip(filemap):
     stream = StringIO()
     zf = zipfile.ZipFile(stream, mode='w')
-    for path in locations:
-        try:
-            contents = getter(path)
-        except (PathNotFoundError, KeyError):
-            raise StorageArchiveError(path)
+    for path, contents in filemap:
         znfo = zipfile.ZipInfo(path)
         znfo.file_size = len(contents)
         znfo.compress_type = zipfile.ZIP_DEFLATED
