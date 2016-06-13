@@ -76,7 +76,7 @@ def OmexExposureArchiverFactory(exposure_object):
 @implementer(IExposureFileTool)
 class WebCatLinkTool(object):
     """
-    Tool for comparing files.
+    Linkage to external webcat tool.
     """
 
     label = u'CombineArchive Web'

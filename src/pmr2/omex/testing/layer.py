@@ -29,11 +29,27 @@ class OmexBaseLayer(PloneSandboxLayer):
         #self.applyProfile(portal, 'pmr2.omex:default')
 
         su = zope.component.getUtility(IStorageUtility, name='dummy_storage')
-        su._loadDir('omex_base', join(dirname(__file__), 'omex_base'))
 
+        su._loadDir('omex_base', join(dirname(__file__), 'omex_base'))
         w = Workspace('omex_base')
         w.storage = 'dummy_storage'
         portal.workspace['omex_base'] = w
+
+        su._loadDir('subrepo', join(dirname(__file__), 'subrepo'))
+        w = Workspace('subrepo')
+        w.storage = 'dummy_storage'
+        portal.workspace['subrepo'] = w
+
+        raw = su._dummy_storage_data['omex_base']
+        raw.append({})
+        raw[-1].update(raw[2])
+        raw[-1]['subrepo'] = {
+            '': '_subrepo',
+            'rev': '0',
+            # XXX note the lack of portal in vhost
+            'location': 'http://vhost/workspace/subrepo',
+        }
+
 
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'pmr2.omex')
@@ -71,6 +87,7 @@ class OmexExposureLayer(PloneSandboxLayer):
         _create_exposure('0')
         _create_exposure('1')
         _create_exposure('2')
+        _create_exposure('3')
 
 
 OMEX_EXPOSURE_FIXTURE = OmexExposureLayer()

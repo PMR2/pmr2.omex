@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<omexManifest
+    xmlns="http://identifiers.org/combine.specifications/omex-manifest">
+  <content location="."
+    format="http://identifiers.org/combine.specifications/omex" />
+  <content location="./subrepo_manifest.xml"
+    format="http://identifiers.org/combine.specifications/omex-manifest" />
+  <content location="./demo.xml"
+    format="http://identifiers.org/combine.specifications/sbml" />
+  <content location="./subrepo/module/sub.txt"
+    format="http://identifiers.org/combine.specifications/sbml" />
+  <content location="./metadata.rdf"
+    format="http://identifiers.org/combine.specifications/omex-metadata" />
+</omexManifest>

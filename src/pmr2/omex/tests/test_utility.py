@@ -138,9 +138,31 @@ class TestOmexExposureUtility(TestCase):
         self.assertEqual(sorted(zf.namelist()),
             ['all_manifest.xml', 'demo.xml', 'metadata.rdf'])
 
+    def test_generate_omex_ef_manifest_with_subrepo(self):
+        context = self.portal.ec.combine_test3['demo.xml']
+        request = TestRequest()
+        annotator = zope.component.getUtility(IExposureFileAnnotator,
+            name='omex')(context, request)
+        annotator(data=(('path', u'subrepo_manifest.xml'),))
+
+        archiver = zope.component.getAdapter(context, IOmexExposureArchiver)
+        archiver()
+
+        dl = OmexExposureDownload(context, self.layer['portal'].REQUEST)
+        result = dl()
+
+        stream = StringIO(result)
+        zf = zipfile.ZipFile(stream, mode='r')
+
+        self.assertEqual(sorted(zf.namelist()), [
+            'demo.xml', 'metadata.rdf', 'module/sub.txt',
+            'subrepo_manifest.xml'])
+
+        self.assertEqual(zf.open('module/sub.txt').read(), 'A submodule.\n')
+
+
 def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestOmexStorageUtility))
     suite.addTest(makeSuite(TestOmexExposureUtility))
     return suite
-
