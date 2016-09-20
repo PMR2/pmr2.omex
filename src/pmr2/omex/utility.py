@@ -82,7 +82,10 @@ class WebCatLinkTool(object):
     label = u'CombineArchive Web'
 
     def get_tool_link(self, exposure_object):
-        exposure, workspace, path = zope.component.getAdapter(
-            exposure_object, IExposureSourceAdapter).source()
+        try:
+            exposure, workspace, path = zope.component.getAdapter(
+                exposure_object, IExposureSourceAdapter).source()
+        except:
+            return None
 
         return exposure.absolute_url() + '/webcat_tool'
