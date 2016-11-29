@@ -17,6 +17,23 @@ demo_omex = '''<?xml version='1.0' encoding='utf-8' standalone='yes'?>
     format="http://identifiers.org/combine.specifications/omex-metadata" />
 </omexManifest>'''
 
+with_dot_omex = '''<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<omexManifest
+    xmlns="http://identifiers.org/combine.specifications/omex-manifest">
+  <content location="."
+    format="http://identifiers.org/combine.specifications/omex" />
+  <content location="./manifest.xml"
+    format="http://identifiers.org/combine.specifications/omex-manifest" />
+  <content location="./BorisEJB.xml"
+    format="http://identifiers.org/combine.specifications/sbml" />
+  <content location="./paper/Kholodenko2000.pdf"
+    format="http://purl.org/NET/mediatypes/application/pdf" />
+  <content location="http://www.ebi.ac.uk/biomodels-main/BIOMD0000000010"
+    format="http://identifiers.org/combine.specifications/sbml" />
+  <content location="./metadata.rdf"
+    format="http://identifiers.org/combine.specifications/omex-metadata" />
+</omexManifest>'''
+
 
 class TestOmex(TestCase):
     """
@@ -30,6 +47,12 @@ class TestOmex(TestCase):
         pass
 
     def test_manifest_load(self):
+        results = parse_manifest(demo_omex)
+        self.assertEqual(results,
+            ['manifest.xml', 'BorisEJB.xml', 'paper/Kholodenko2000.pdf',
+            'metadata.rdf'])
+
+    def test_manifest_load_with_dot(self):
         results = parse_manifest(demo_omex)
         self.assertEqual(results,
             ['manifest.xml', 'BorisEJB.xml', 'paper/Kholodenko2000.pdf',
