@@ -8,7 +8,10 @@ class IOmexNote(zope.interface.Interface):
 
     path = StorageFileChoice(
         title=u'Manifest path',
-        description=u'The path to the Manifest file for this piece of work.',
+        description=u'The path to the COMBINE manifest file that specifies '
+                     'the files relating to this piece of work.  If a valid '
+                     'manifest file is specified, a "COMBINE Archive" '
+                     'download link will be enabled for this exposure file.',
         vocabulary='pmr2.vocab.manifest',
         required=False,
     )
