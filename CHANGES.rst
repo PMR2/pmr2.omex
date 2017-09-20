@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.2 - Released (2017-09-20)
+-----------------------------
+
+- Provide external_attr to the zipfile info bits so that tools that make
+  use of these data don't trigger permission errors.
+
 0.2.1 - Released (2016-12-29)
 -----------------------------
 
