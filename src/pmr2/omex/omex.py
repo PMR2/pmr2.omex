@@ -86,6 +86,7 @@ def _create_zip(filemap):
         znfo = zipfile.ZipInfo(path)
         znfo.file_size = len(contents)
         znfo.compress_type = zipfile.ZIP_DEFLATED
+        znfo.external_attr = 0o777 << 16L
         zf.writestr(znfo, contents)
     zf.close()
     return stream.getvalue()

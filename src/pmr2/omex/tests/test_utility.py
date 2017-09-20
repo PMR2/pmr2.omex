@@ -95,6 +95,7 @@ class TestOmexExposureUtility(TestCase):
         zf = zipfile.ZipFile(stream, mode='r')
         self.assertEqual(sorted(zf.namelist()),
             ['demo.xml', 'demo_only.xml'])
+        self.assertNotEqual(zf.getinfo('demo.xml').external_attr, 0)
 
     def test_generate_omex_ef_no_omex(self):
         # no archiver available.
