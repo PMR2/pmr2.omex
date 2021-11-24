@@ -4,6 +4,7 @@
     i18n_domain="pmr2.omex">
 
   <include file="annotation.zcml"/>
+  <include package=".exposure"/>
 
   <utility
       provides="pmr2.app.workspace.interfaces.IStorageArchiver"

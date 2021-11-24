@@ -20,24 +20,27 @@ class TrackedCellMLLoader(object):
 
     def load(self, exposure_file, urlopener=None):
         urlopener = urlopener or LoggedPmrUrlOpener()
-        cu = zope.component.getUtility(ICellMLAPIUtility)
         sa = zope.component.getAdapter(exposure_file, IExposureSourceAdapter)
         exposure, workspace, path = sa.source()
-        modelfile = '%s/@@%s/%s/%s' % (workspace.absolute_url(),
-            'rawfile', exposure.commit_id, path)
         # need this to resolve.
         root = make_pmr_path(
             '/'.join(workspace.getPhysicalPath()), exposure.commit_id, '')
         target = make_pmr_path(
             '/'.join(workspace.getPhysicalPath()), exposure.commit_id, path)
-        try:
-            cu.loadModel(target, loader=urlopener)
-        except CellMLLoaderError:
-            # we only care that the imports are loaded once
-            pass
+        self.loadTarget(target, urlopener)
         # the map of loaded modules
         return {
             key[len(root):]: value
             for key, value in urlopener.loaded.items()
             if key.startswith(root)
         }
+
+    def loadTarget(self, target, urlopener=None):
+        urlopener = urlopener or LoggedPmrUrlOpener()
+        cu = zope.component.getUtility(ICellMLAPIUtility)
+        try:
+            cu.loadModel(target, loader=urlopener)
+        except CellMLLoaderError:
+            # we only care that the imports are loaded once
+            # nor do we care if the model don't actually load...
+            pass

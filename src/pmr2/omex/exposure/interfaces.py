@@ -8,7 +8,7 @@ from cellml.api.pmr2.interfaces import CellMLLoaderError
 
 class DuplicateURLError(URLError):
     """
-    For aborting on duplicate URL
+    For signaling an abort on a duplicate URL to be loaded.
     """
 
 

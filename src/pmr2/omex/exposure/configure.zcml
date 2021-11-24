@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="pmr2.omex">
+
+  <utility
+      provides=".interfaces.IExposureFileLoader"
+      factory=".cellml.TrackedCellMLLoader"
+      name="cellml"
+      />
+
+  <utility
+      provides=".interfaces.IExposureFileLoader"
+      factory=".sedml.TrackedSedMLLoader"
+      name="sedml"
+      />
+
+</configure>
