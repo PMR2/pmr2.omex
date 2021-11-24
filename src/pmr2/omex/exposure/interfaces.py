@@ -1,4 +1,15 @@
+from __future__ import absolute_import
+
+from urllib2 import URLError
 import zope.interface
+
+from cellml.api.pmr2.interfaces import CellMLLoaderError
+
+
+class DuplicateURLError(URLError):
+    """
+    For aborting on duplicate URL
+    """
 
 
 class IExposureFileLoader(zope.interface.Interface):

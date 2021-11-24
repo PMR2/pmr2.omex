@@ -6,6 +6,7 @@ import zope.component
 from zope.interface import implementer
 
 from cellml.pmr2.urlopener import PmrUrlOpener
+from pmr2.omex.exposure.interfaces import DuplicateURLError
 
 
 class LoggedPmrUrlOpener(PmrUrlOpener):
@@ -19,6 +20,10 @@ class LoggedPmrUrlOpener(PmrUrlOpener):
         self.loading = False
 
     def loadURL(self, location, headers=None):
+        if location in self.loaded:
+            raise DuplicateURLError(
+                '%s already loaded by this loader' % location)
+
         p = urlparse.urlparse(location)
         # ensure that only the outermost caller is tracking the loaded
         # urls

@@ -116,11 +116,11 @@ class LoaderTestCase(TestCase):
         su = getUtility(IStorageUtility, name='dummy_storage')
         src = su._dummy_storage_data['demo_model'][0]['multi.cellml']
 
-        loaded = []
+        external_loaded = []
 
         # patch urllib2.urlopen to return this exact result
         def urlopen(request):
-            loaded.append(request.get_full_url())
+            external_loaded.append(request.get_full_url())
             return BytesIO(
                 su._dummy_storage_data['main_model'][0]['model.cellml'])
 
@@ -163,9 +163,7 @@ class LoaderTestCase(TestCase):
         # will still be loaded.
         self.assertEqual([
             'http://nohost/plone/workspace/main_model/rawfile/0/model.cellml',
-            'http://nohost/plone/workspace/main_model/rawfile/0/model.cellml',
-            'http://nohost/plone/workspace/main_model/rawfile/0/model.cellml',
-        ], loaded)
+        ], external_loaded)
 
 
 def test_suite():

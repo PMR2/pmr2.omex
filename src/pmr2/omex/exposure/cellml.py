@@ -8,6 +8,7 @@ from zope.interface import implementer
 from pmr2.app.exposure.interfaces import IExposureSourceAdapter
 
 from cellml.api.pmr2.interfaces import ICellMLAPIUtility
+from cellml.api.pmr2.interfaces import CellMLLoaderError
 from cellml.pmr2.urlopener import make_pmr_path
 
 from pmr2.omex.exposure.interfaces import IExposureFileLoader
@@ -29,7 +30,11 @@ class TrackedCellMLLoader(object):
             '/'.join(workspace.getPhysicalPath()), exposure.commit_id, '')
         target = make_pmr_path(
             '/'.join(workspace.getPhysicalPath()), exposure.commit_id, path)
-        model = cu.loadModel(target, loader=urlopener)
+        try:
+            cu.loadModel(target, loader=urlopener)
+        except CellMLLoaderError:
+            # we only care that the imports are loaded once
+            pass
         # the map of loaded modules
         return {
             key[len(root):]: value
