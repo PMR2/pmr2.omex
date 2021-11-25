@@ -20,7 +20,7 @@ from pmr2.omex.exposure.urlopener import LoggedPmrUrlOpener
 @implementer(IExposureFileLoader)
 class TrackedSedMLLoader(ExposureFileLoader):
 
-    def process_sedml(self, sedml, exposure, workspace, urlopener):
+    def process_sedml(self, sedml, source, urlopener):
         dom = etree.XML(sedml)
         ns = {'_': dom.nsmap[None]}
         targets = []
@@ -33,14 +33,11 @@ class TrackedSedMLLoader(ExposureFileLoader):
                 # do not load remote resources
                 continue
 
+            resolved = urlopener.urljoin(source, target)
+
             # TODO maybe splitext and just have a default?
             # as a demonstration with one specific target we can get away
             # with this...
-            resolved = make_pmr_path(
-                '/'.join(workspace.getPhysicalPath()), exposure.commit_id,
-                target,
-            )
-
             if target.endswith('.cellml'):
                 utility = zope.component.queryUtility(
                     IExposureFileLoader, name='cellml')
@@ -67,7 +64,7 @@ class TrackedSedMLLoader(ExposureFileLoader):
         except DuplicateURLError:
             pass
         else:
-            self.process_sedml(sedml, exposure, workspace, urlopener)
+            self.process_sedml(sedml, urn, urlopener)
 
         return {
             key[len(root):]: value

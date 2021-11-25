@@ -28,6 +28,32 @@ class SedMLTestCase(unittest.TestCase):
 
     layer = SEDML_INTEGRATION_LAYER
 
+    def test_simple(self):
+        request = TestRequest(form={
+            'form.widgets.workspace': u'sedml',
+            'form.widgets.commit_id': u'0',
+            'form.buttons.add': 1,
+        })
+        testform = ExposureAddForm(self.layer['portal'].exposure, request)
+        testform.update()
+        exp_id = testform._data['id']
+        context = self.layer['portal'].exposure[exp_id]
+
+        ExposureFileGenForm(context, TestRequest(form={
+            'form.widgets.filename': [u'simple.sedml'],
+            'form.buttons.add': 1,
+        })).update()
+
+        exposure_file = context[u'simple.sedml']
+        loader = TrackedSedMLLoader()
+        urlopener = LoggedPmrUrlOpener()
+        result = sorted(loader.load(exposure_file, urlopener=urlopener).keys())
+
+        self.assertEqual([
+            u'demo.cellml',
+            u'simple.sedml',
+        ], result)
+
     def test_extract_embeded_workspace_mixed_external(self):
         # inject a modified version of the multi2 model
         su = getUtility(IStorageUtility, name='dummy_storage')
