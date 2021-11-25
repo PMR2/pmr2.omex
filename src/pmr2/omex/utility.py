@@ -12,6 +12,7 @@ from pmr2.app.exposure.interfaces import IExposureFileTool
 
 from .interfaces import IOmexExposureArchiver
 from .omex import build_omex
+from .exposure.utility import ExposureGeneratedOmexArchiver
 
 
 @implementer(IStorageArchiver)
@@ -35,10 +36,10 @@ class OmexStorageArchiver(object):
 @implementer(IExposureDownloadTool)
 class OmexExposureDownloadTool(object):
     """
-    COMBINE Archive Download tool.
+    COMBINE Archive Download tool for a handcrafted manifest.
     """
 
-    label = u'COMBINE Archive'
+    label = u'COMBINE Archive (crafted)'
     suffix = '.omex'
     mimetype = 'application/vnd.combine.omex'
 
@@ -53,6 +54,28 @@ class OmexExposureDownloadTool(object):
             exposure_object, IOmexExposureArchiver)
         if archiver:
             return archiver()
+
+
+@implementer(IExposureDownloadTool)
+class OmexExposureGeneratedDownloadTool(object):
+    """
+    COMBINE Archive Download tool through the generated manifest.
+    """
+
+    label = u'COMBINE Archive (exposure)'
+    suffix = '.omex'
+    mimetype = 'application/vnd.combine.omex'
+
+    def get_download_link(self, exposure_object):
+        exposure, workspace, path = zope.component.getAdapter(
+            exposure_object, IExposureSourceAdapter).source()
+        return exposure.absolute_url() + '/download_generated_omex'
+
+    def download(self, exposure_object, request):
+        exposure, workspace, path = zope.component.getAdapter(
+            exposure_object, IExposureSourceAdapter).source()
+        archiver = ExposureGeneratedOmexArchiver()
+        return archiver.archive_exposure(exposure)
 
 
 def OmexExposureArchiverFactory(exposure_object):

@@ -46,6 +46,22 @@ class OmexExposureDownload(BrowserView):
         return content
 
 
+class OmexExposureGeneratedDownload(BrowserView):
+    """
+    COMBINE Archive Download tool.
+    """
+
+    def __call__(self):
+        tool = zope.component.getUtility(IExposureDownloadTool, name='omex_generated')
+        content = tool.download(self.context, self.request)
+        self.request.response.setHeader('Content-Type', tool.mimetype)
+        self.request.response.setHeader('Content-Length', len(content))
+        self.request.response.setHeader('Content-Disposition',
+            'attachment; filename="%s%s"' % (
+                self.context.title_or_id(), tool.suffix))
+        return content
+
+
 class WebCatToolView(SimplePage):
 
     template = ViewPageTemplateFile('webcat_view.pt')
