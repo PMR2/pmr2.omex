@@ -1,4 +1,6 @@
 import unittest
+import zipfile
+from io import BytesIO
 
 from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
@@ -9,6 +11,7 @@ from pmr2.app.exposure.browser.browser import ExposureFileGenForm
 
 from pmr2.omex.exposure.urlopener import LoggedPmrUrlOpener
 from pmr2.omex.exposure.sedml import TrackedSedMLLoader
+from pmr2.omex.exposure.utility import ExposureGeneratedOmexArchiver
 
 from pmr2.testing.base import TestRequest
 from plone.app.testing import IntegrationTesting
@@ -46,12 +49,16 @@ class SedMLTestCase(unittest.TestCase):
         testform.update()
         exp_id = testform._data['id']
         context = self.layer['portal'].exposure[exp_id]
-        request = TestRequest(form={
+
+        ExposureFileGenForm(context, TestRequest(form={
             'form.widgets.filename': [u'simulation.sedml'],
             'form.buttons.add': 1,
-        })
-        testform = ExposureFileGenForm(context, request)
-        testform.update()
+        })).update()
+        ExposureFileGenForm(context, TestRequest(form={
+            'form.widgets.filename': [u'demo.cellml'],
+            'form.buttons.add': 1,
+        })).update()
+
         exposure_file = context[u'simulation.sedml']
         registry = getUtility(IRegistry)
         registry['cellml.pmr2.vhost.prefix_maps'] = {u'nohost': u''}
@@ -70,3 +77,11 @@ class SedMLTestCase(unittest.TestCase):
         self.assertEqual([
         ], urlopener.external)
 
+        # also test that this full archive can be created
+        archiver = ExposureGeneratedOmexArchiver()
+        zipbytes = archiver.archive_exposure(context)
+        zf = zipfile.ZipFile(BytesIO(zipbytes), mode='r')
+        self.assertEqual(
+            sorted(zf.namelist()),
+            sorted(['manifest.xml'] + result),
+        )
