@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from os.path import splitext
-from zope.component import getUtility, getAdapter
+from zope.component import getUtility, queryUtility, getAdapter
 from Products.CMFCore.utils import getToolByName
 
 from pmr2.app.exposure.interfaces import IExposureSourceAdapter
@@ -22,7 +22,10 @@ class ExposureGeneratedOmexArchiver(object):
         """
 
         extname = splitext(exposure_file.getPhysicalPath()[-1])[1][1:]
-        utility = getUtility(IExposureFileLoader, name=extname)
+        utility = queryUtility(
+            IExposureFileLoader, name=extname,
+            default=getUtility(IExposureFileLoader)
+        )
         utility.load(exposure_file, urlopener)
 
     def archive_exposure(self, exposure):
