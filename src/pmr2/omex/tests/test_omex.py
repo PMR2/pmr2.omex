@@ -1,6 +1,9 @@
 from unittest import TestCase, TestSuite, makeSuite
 
-from pmr2.omex.omex import build_omex, _process, parse_manifest
+from pmr2.omex.omex import (
+    parse_manifest,
+    generate_manifest,
+)
 
 demo_omex = '''<?xml version='1.0' encoding='utf-8' standalone='yes'?>
 <omexManifest
@@ -58,6 +61,35 @@ class TestOmex(TestCase):
             ['manifest.xml', 'BorisEJB.xml', 'paper/Kholodenko2000.pdf',
             'metadata.rdf'])
 
+    def test_generate_manifest(self):
+        manifest = generate_manifest({
+            'demo1.cellml': '',
+            'demo1.sedml': '',
+            'manifest.xml': '',
+            'metadata.rdf': '',
+            'image.png': '',
+        })
+        results = parse_manifest(manifest)
+        self.assertEqual(results, [
+            'demo1.cellml',
+            'demo1.sedml',
+            'image.png',
+            'manifest.xml',
+            'metadata.rdf',
+        ])
+        # just check that these are present int he output.
+        self.assertIn(
+            "http://identifiers.org/combine.specifications/cellml",
+            manifest,
+        )
+        self.assertIn(
+            "http://identifiers.org/combine.specifications/omex-metadata",
+            manifest,
+        )
+        self.assertIn(
+            "http://purl.org/NET/mediatypes/image/png",
+            manifest,
+        )
 
 def test_suite():
     suite = TestSuite()
