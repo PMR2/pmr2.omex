@@ -5,6 +5,12 @@
 
   <utility
       provides=".interfaces.IExposureFileLoader"
+      factory=".default.ExposureFileLoader"
+      name=""
+      />
+
+  <utility
+      provides=".interfaces.IExposureFileLoader"
       factory=".cellml.TrackedCellMLLoader"
       name="cellml"
       />

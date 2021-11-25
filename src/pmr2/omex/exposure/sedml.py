@@ -13,24 +13,14 @@ from cellml.pmr2.urlopener import make_pmr_path
 
 from pmr2.omex.exposure.interfaces import IExposureFileLoader
 from pmr2.omex.exposure.interfaces import DuplicateURLError
+from pmr2.omex.exposure.default import ExposureFileLoader
 from pmr2.omex.exposure.urlopener import LoggedPmrUrlOpener
 
 
 @implementer(IExposureFileLoader)
-class TrackedSedMLLoader(object):
+class TrackedSedMLLoader(ExposureFileLoader):
 
-    def load(self, exposure_file, urlopener=None):
-        urlopener = urlopener or LoggedPmrUrlOpener()
-        sa = zope.component.getAdapter(exposure_file, IExposureSourceAdapter)
-        # rather than processing the file directly, let the urlopener
-        # track the process
-        exposure, workspace, path = sa.source()
-        # need this to resolve.
-        root = make_pmr_path(
-            '/'.join(workspace.getPhysicalPath()), exposure.commit_id, '')
-        sedml = urlopener.loadURL(make_pmr_path(
-            '/'.join(workspace.getPhysicalPath()), exposure.commit_id, path))
-
+    def process_sedml(self, sedml, exposure, workspace, urlopener):
         dom = etree.XML(sedml)
         ns = {'_': dom.nsmap[None]}
         targets = []
@@ -58,13 +48,27 @@ class TrackedSedMLLoader(object):
                     utility.loadTarget(resolved, urlopener=urlopener)
                     continue
 
-            try:
-                urlopener.loadURL(resolved)
-            except DuplicateURLError:
-                pass
+            self.loadTarget(resolved, urlopener)
 
-        # TODO parse sedml for sources.
-        # the map of loaded modules
+    def load(self, exposure_file, urlopener=None):
+        urlopener = urlopener or LoggedPmrUrlOpener()
+        sa = zope.component.getAdapter(exposure_file, IExposureSourceAdapter)
+        # rather than processing the file directly, let the urlopener
+        # track the process
+        exposure, workspace, path = sa.source()
+        # need this to resolve.
+        root = make_pmr_path(
+            '/'.join(workspace.getPhysicalPath()), exposure.commit_id, '')
+        urn = make_pmr_path(
+            '/'.join(workspace.getPhysicalPath()), exposure.commit_id, path)
+
+        try:
+            sedml = urlopener.loadURL(urn)
+        except DuplicateURLError:
+            pass
+        else:
+            self.process_sedml(sedml, exposure, workspace, urlopener)
+
         return {
             key[len(root):]: value
             for key, value in urlopener.loaded.items()

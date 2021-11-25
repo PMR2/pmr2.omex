@@ -20,3 +20,9 @@ class IExposureFileLoader(zope.interface.Interface):
         loaded files; takes an optional urlopener that would provide the
         logged loaded field.
         """
+
+    def loadTarget(urn, urlopener):
+        """
+        Load the provided urn with the urlopener in order to register
+        the urn with the urlopener
+        """

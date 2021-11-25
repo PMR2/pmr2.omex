@@ -13,33 +13,16 @@ from cellml.pmr2.urlopener import make_pmr_path
 
 from pmr2.omex.exposure.interfaces import IExposureFileLoader
 from pmr2.omex.exposure.urlopener import LoggedPmrUrlOpener
+from pmr2.omex.exposure.default import ExposureFileLoader
 
 
 @implementer(IExposureFileLoader)
-class TrackedCellMLLoader(object):
+class TrackedCellMLLoader(ExposureFileLoader):
 
-    def load(self, exposure_file, urlopener=None):
-        urlopener = urlopener or LoggedPmrUrlOpener()
-        sa = zope.component.getAdapter(exposure_file, IExposureSourceAdapter)
-        exposure, workspace, path = sa.source()
-        # need this to resolve.
-        root = make_pmr_path(
-            '/'.join(workspace.getPhysicalPath()), exposure.commit_id, '')
-        target = make_pmr_path(
-            '/'.join(workspace.getPhysicalPath()), exposure.commit_id, path)
-        self.loadTarget(target, urlopener)
-        # the map of loaded modules
-        return {
-            key[len(root):]: value
-            for key, value in urlopener.loaded.items()
-            if key.startswith(root)
-        }
-
-    def loadTarget(self, target, urlopener=None):
-        urlopener = urlopener or LoggedPmrUrlOpener()
+    def loadTarget(self, urn, urlopener):
         cu = zope.component.getUtility(ICellMLAPIUtility)
         try:
-            cu.loadModel(target, loader=urlopener)
+            cu.loadModel(urn, loader=urlopener)
         except CellMLLoaderError:
             # we only care that the imports are loaded once
             # nor do we care if the model don't actually load...
