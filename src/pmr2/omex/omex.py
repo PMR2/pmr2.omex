@@ -86,6 +86,8 @@ def _create_zip(filemap):
     stream = StringIO()
     zf = zipfile.ZipFile(stream, mode='w')
     for path, contents in filemap:
+        if path == '.':
+            continue
         znfo = zipfile.ZipInfo(path)
         znfo.file_size = len(contents)
         znfo.compress_type = zipfile.ZIP_DEFLATED
@@ -135,7 +137,9 @@ def generate_manifest(filemap):
     ''').strip()
     output = [omex_header]
     for name, content in sorted(filemap.items()):
-        if name == 'manifest.xml':
+        if name == '.':
+            fmt = "http://identifiers.org/combine.specifications/omex"
+        elif name == 'manifest.xml':
             fmt = "http://identifiers.org/combine.specifications/omex-manifest"
         else:
             fext = splitext(name)[-1]

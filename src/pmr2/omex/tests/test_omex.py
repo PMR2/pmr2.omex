@@ -63,6 +63,7 @@ class TestOmex(TestCase):
 
     def test_generate_manifest(self):
         manifest = generate_manifest({
+            '.': '',
             'demo1.cellml': '',
             'demo1.sedml': '',
             'manifest.xml': '',
@@ -78,6 +79,11 @@ class TestOmex(TestCase):
             'metadata.rdf',
         ])
         # just check that these are present int he output.
+        self.assertIn(
+            '<content location="." '
+            'format="http://identifiers.org/combine.specifications/omex" />',
+            manifest,
+        )
         self.assertIn(
             "http://identifiers.org/combine.specifications/cellml",
             manifest,
