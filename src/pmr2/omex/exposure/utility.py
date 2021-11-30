@@ -37,7 +37,6 @@ class ExposureGeneratedOmexArchiver(object):
 
         # process urlopener data into archive
         filemap = {
-            'manifest.xml': '',  # placeholder
         }
         # TODO figure out how to refactor this chunk of copypasta code
         # needed in various places.
