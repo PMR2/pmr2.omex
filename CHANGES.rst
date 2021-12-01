@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3.0 - Released (2021-12-01)
+-----------------------------
+
+- Generate omex archives from an exposure, provides an initial hard-
+  coded support for CellML and SED-ML exposure files for resolving
+  linked resources.
+
 0.2.2 - Released (2017-09-20)
 -----------------------------
 
