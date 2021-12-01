@@ -4,6 +4,7 @@
     i18n_domain="pmr2.omex">
 
   <include file="annotation.zcml"/>
+  <include package=".exposure"/>
 
   <utility
       provides="pmr2.app.workspace.interfaces.IStorageArchiver"
@@ -15,6 +16,12 @@
       provides="pmr2.app.exposure.interfaces.IExposureDownloadTool"
       factory=".utility.OmexExposureDownloadTool"
       name="omex"
+      />
+
+  <utility
+      provides="pmr2.app.exposure.interfaces.IExposureDownloadTool"
+      factory=".utility.OmexExposureGeneratedDownloadTool"
+      name="omex_generated"
       />
 
   <utility
@@ -33,6 +40,13 @@
       for="pmr2.app.exposure.interfaces.IExposureFile"
       name="download_omex"
       class=".browser.OmexExposureDownload"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for="pmr2.app.exposure.interfaces.IExposure"
+      name="download_generated_omex"
+      class=".browser.OmexExposureGeneratedDownload"
       permission="zope2.View"
       />
 

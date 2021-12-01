@@ -40,6 +40,11 @@ class OmexBaseLayer(PloneSandboxLayer):
         w.storage = 'dummy_storage'
         portal.workspace['subrepo'] = w
 
+        su._loadDir('sedml', join(dirname(__file__), 'sedml'))
+        w = Workspace('sedml')
+        w.storage = 'dummy_storage'
+        portal.workspace['sedml'] = w
+
         raw = su._dummy_storage_data['omex_base']
         raw.append({})
         raw[-1].update(raw[2])
@@ -49,7 +54,6 @@ class OmexBaseLayer(PloneSandboxLayer):
             # XXX note the lack of portal in vhost
             'location': 'http://vhost/workspace/subrepo',
         }
-
 
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'pmr2.omex')

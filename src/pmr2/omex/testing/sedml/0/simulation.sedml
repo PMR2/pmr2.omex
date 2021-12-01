@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version3" level="1" version="3">
+  <listOfDataDescriptions>
+    <dataDescription id="Data1" name="Table" source="table.csv" format="urn:sedml:format:csv">
+    </dataDescription>
+  </listOfDataDescriptions>
+  <listOfModels>
+    <model id="model1" language="urn:sedml:language:sbml" source="urn:miriam:biomodels.db:BIOMD0000000140"/>
+    <model id="model2" language="urn:sedml:language:cellml" source="http://nohost/plone/workspace/main_model/model.cellml"/>
+    <model id="model3" language="urn:sedml:language:cellml" source="demo.cellml"/>
+    <model id="model4" language="urn:sedml:language:cellml" source="embed/multi.cellml"/>
+  </listOfModels>
+</sedML>

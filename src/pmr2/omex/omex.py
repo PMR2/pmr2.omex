@@ -1,5 +1,8 @@
 from cStringIO import StringIO
+from os.path import splitext
 from urlparse import urlparse
+from textwrap import dedent
+import mimetypes
 import zipfile
 
 from lxml import etree
@@ -83,6 +86,8 @@ def _create_zip(filemap):
     stream = StringIO()
     zf = zipfile.ZipFile(stream, mode='w')
     for path, contents in filemap:
+        if path == '.':
+            continue
         znfo = zipfile.ZipInfo(path)
         znfo.file_size = len(contents)
         znfo.compress_type = zipfile.ZIP_DEFLATED
@@ -111,3 +116,40 @@ def parse_manifest(raw_manifest):
 
     # assert that 'manifest.xml' is included?
     return locations
+
+def generate_manifest(filemap):
+    identifiers_org = {
+        '.cellml': "http://identifiers.org/combine.specifications/cellml",
+        '.sbml': "http://identifiers.org/combine.specifications/sbml",
+        '.sedml': "http://identifiers.org/combine.specifications/sedml",
+        '.rdf': "http://identifiers.org/combine.specifications/omex-metadata",
+    }
+    omex_header = dedent('''
+    <?xml version='1.0' encoding='utf-8' standalone='yes'?>
+    <omexManifest
+        xmlns="http://identifiers.org/combine.specifications/omex-manifest">
+    ''').strip()
+    omex_footer = dedent('''
+    </omexManifest>
+    ''').strip()
+    omex_line = dedent('''
+    <content location="{location}" format="{format}" />
+    ''').strip()
+    output = [omex_header]
+    for name, content in sorted(filemap.items()):
+        if name == '.':
+            fmt = "http://identifiers.org/combine.specifications/omex"
+        elif name == 'manifest.xml':
+            fmt = "http://identifiers.org/combine.specifications/omex-manifest"
+        else:
+            fext = splitext(name)[-1]
+            fmt = identifiers_org.get(
+                fext, "http://purl.org/NET/mediatypes/%s" % (
+                    mimetypes.guess_type(name)[0]))
+
+        output.append(omex_line.format(
+            location=name,
+            format=fmt,
+        ))
+    output.append(omex_footer)
+    return '\n'.join(output)
