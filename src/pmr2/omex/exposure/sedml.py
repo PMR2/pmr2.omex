@@ -45,30 +45,13 @@ class TrackedSedMLLoader(ExposureFileLoader):
                     utility.loadTarget(resolved, urlopener=urlopener)
                     continue
 
-            self.loadTarget(resolved, urlopener)
+            # use the version provided by the core implementation
+            ExposureFileLoader.loadTarget(self, resolved, urlopener)
 
-    def load(self, exposure_file, urlopener=None):
-        urlopener = urlopener or LoggedPmrUrlOpener()
-        sa = zope.component.getAdapter(exposure_file, IExposureSourceAdapter)
-        # rather than processing the file directly, let the urlopener
-        # track the process
-        exposure, workspace, path = sa.source()
-        # need this to resolve.
-        root = make_pmr_path(
-            '/'.join(workspace.getPhysicalPath()), exposure.commit_id, '')
-        urn = make_pmr_path(
-            '/'.join(workspace.getPhysicalPath()), exposure.commit_id, path)
-
+    def loadTarget(self, urn, urlopener):
         try:
             sedml = urlopener.loadURL(urn)
         except DuplicateURLError:
             pass
         else:
             self.process_sedml(sedml, urn, urlopener)
-
-        return {
-            key[len(root):]: value
-            for key, value in urlopener.loaded.items()
-            if key.startswith(root)
-        }
-
