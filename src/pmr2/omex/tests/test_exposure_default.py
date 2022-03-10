@@ -29,6 +29,7 @@ class LoaderTestCase(TestCase):
             self.layer['portal'].ec.combine_test0)
         zf = zipfile.ZipFile(BytesIO(zipbytes), mode='r')
         self.assertEqual([
+            '!!autogen-disclaimer.txt',
             'demo.xml',
             'manifest.xml',
             'no_omex.xml',

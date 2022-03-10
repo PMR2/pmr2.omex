@@ -162,5 +162,5 @@ class SedMLTestCase(unittest.TestCase):
         zf = zipfile.ZipFile(BytesIO(zipbytes), mode='r')
         self.assertEqual(
             sorted(zf.namelist()),
-            sorted(['manifest.xml'] + result),
+            sorted(['!!autogen-disclaimer.txt', 'manifest.xml'] + result),
         )
