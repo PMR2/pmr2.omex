@@ -3,13 +3,16 @@ import zipfile
 from io import BytesIO
 
 from zope.component import getUtility
+from zope.component import queryAdapter
 from plone.registry.interfaces import IRegistry
 
+from pmr2.app.annotation.factory import has_note
 from pmr2.app.workspace.interfaces import IStorageUtility
 from pmr2.app.exposure.browser.browser import ExposureAddForm
 from pmr2.app.exposure.browser.browser import ExposureFileGenForm
 
 from pmr2.omex.exposure.urlopener import LoggedPmrUrlOpener
+from pmr2.omex.exposure.default import ExposureFileLoader
 from pmr2.omex.exposure.sedml import TrackedSedMLLoader
 from pmr2.omex.exposure.utility import ExposureGeneratedOmexArchiver
 
@@ -49,6 +52,56 @@ class SedMLTestCase(unittest.TestCase):
         urlopener = LoggedPmrUrlOpener()
         result = sorted(loader.load(exposure_file, urlopener=urlopener).keys())
 
+        self.assertEqual([
+            u'demo.cellml',
+            u'simple.sedml',
+        ], result)
+
+    def test_note_linkage(self):
+        request = TestRequest(form={
+            'form.widgets.workspace': u'sedml',
+            'form.widgets.commit_id': u'0',
+            'form.buttons.add': 1,
+        })
+        testform = ExposureAddForm(self.layer['portal'].exposure, request)
+        testform.update()
+        exp_id = testform._data['id']
+        context = self.layer['portal'].exposure[exp_id]
+
+        ExposureFileGenForm(context, TestRequest(form={
+            'form.widgets.filename': [u'demo.cellml'],
+            'form.buttons.add': 1,
+        })).update()
+
+        exposure_file = context[u'demo.cellml']
+        loader = ExposureFileLoader()
+        urlopener = LoggedPmrUrlOpener()
+        result = sorted(loader.load(exposure_file, urlopener=urlopener).keys())
+
+        # No note, so no sedml
+        self.assertEqual([
+            u'demo.cellml',
+        ], result)
+        # Also no note is created
+        self.assertFalse(has_note(exposure_file, 'opencor'))
+
+        note = queryAdapter(exposure_file, name='opencor')
+        if not note:
+            raise unittest.SkipTest('no cellml.pmr available for testing')
+
+        urlopener = LoggedPmrUrlOpener()
+        result = sorted(loader.load(exposure_file, urlopener=urlopener).keys())
+
+        # has note. but no value, so no sedml
+        self.assertTrue(has_note(exposure_file, 'opencor'))
+        self.assertEqual([
+            u'demo.cellml',
+        ], result)
+
+        note.filename = 'simple.sedml'
+
+        urlopener = LoggedPmrUrlOpener()
+        result = sorted(loader.load(exposure_file, urlopener=urlopener).keys())
         self.assertEqual([
             u'demo.cellml',
             u'simple.sedml',

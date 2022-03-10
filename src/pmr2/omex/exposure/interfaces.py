@@ -26,3 +26,14 @@ class IExposureFileLoader(zope.interface.Interface):
         Load the provided urn with the urlopener in order to register
         the urn with the urlopener
         """
+
+
+class IExposureFileViewHandler(zope.interface.Interface):
+
+    def handle(view, urlopener):
+        """
+        Handle the view with the urlopener.
+
+        This is typically called from the ExposureFileLoader.load()
+        method.
+        """

@@ -12,8 +12,10 @@ from pmr2.app.exposure.interfaces import IExposureSourceAdapter
 from cellml.pmr2.urlopener import make_pmr_path
 
 from pmr2.omex.exposure.interfaces import IExposureFileLoader
+from pmr2.omex.exposure.interfaces import IExposureFileViewHandler
 from pmr2.omex.exposure.interfaces import DuplicateURLError
 from pmr2.omex.exposure.default import ExposureFileLoader
+from pmr2.omex.exposure.default import ExposureFileViewHandler
 from pmr2.omex.exposure.urlopener import LoggedPmrUrlOpener
 
 
@@ -55,3 +57,18 @@ class TrackedSedMLLoader(ExposureFileLoader):
             pass
         else:
             self.process_sedml(sedml, urn, urlopener)
+
+
+@implementer(IExposureFileViewHandler)
+class OpenCORViewHandler(ExposureFileViewHandler):
+    """
+    Handles the OpenCOR view
+    """
+
+    def handle(self, urn, view, urlopener):
+        if view.filename and view.filename.endswith('.sedml'):
+            resolved = urlopener.urljoin(urn, view.filename)
+            utility = zope.component.queryUtility(
+                IExposureFileLoader, name='sedml')
+            if utility:
+                utility.loadTarget(resolved, urlopener=urlopener)

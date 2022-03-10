@@ -21,4 +21,10 @@
       name="sedml"
       />
 
+  <utility
+      provides=".interfaces.IExposureFileViewHandler"
+      factory=".sedml.OpenCORViewHandler"
+      name="opencor"
+      />
+
 </configure>
