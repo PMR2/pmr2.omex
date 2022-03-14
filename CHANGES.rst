@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.4.0 - Released (2022-03-14)
+-----------------------------
+
+- Provide a means to include resources links or references present in
+  exposure file views, and now include a disclaimer.
+
 0.3.0 - Released (2021-12-01)
 -----------------------------
 
