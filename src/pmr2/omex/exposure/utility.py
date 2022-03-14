@@ -22,13 +22,18 @@ from this OMEX archive.
 
 However, if a file is expected to be present in this archive but was
 omitted, checked whether or not the source exposure has exposed that
-file, if not, you may file an issue at:
+file.  If not and if you feel the curator or the author of the exposure
+should have included that resource, please file an issue at the tracker
+for data issues pertaining to the repository at:
 
 https://github.com/PMR2/models.physiomeproject.org/issues
 
-Alternatively, if this missing resource is present but somehow unlinked,
-it could be that the export system has no knowledge on how that linkage
-might be handled, in which case, please file an issue at:
+Alternatively, if this omitted resource is clearly linked by another
+resource present in the archive (e.g. SED-ML or CellML resource that
+links or reference to a file present in the workspace but is missing
+from the generated archive), it may be that the export system has no
+knowledge on how that linkage might be handled, in which case, please
+file an issue at:
 
 https://github.com/PMR2/pmr2.omex/issues
 """
