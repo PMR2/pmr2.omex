@@ -28,11 +28,11 @@ class IExposureFileLoader(zope.interface.Interface):
         """
 
 
-class IExposureFileViewHandler(zope.interface.Interface):
+class IExposureFileNoteHandler(zope.interface.Interface):
 
-    def handle(view, urlopener):
+    def handle(note, urlopener):
         """
-        Handle the view with the urlopener.
+        Handle the note with the urlopener.
 
         This is typically called from the ExposureFileLoader.load()
         method.

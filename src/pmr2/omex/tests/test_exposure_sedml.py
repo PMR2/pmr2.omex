@@ -112,7 +112,7 @@ class SedMLTestCase(unittest.TestCase):
         su = getUtility(IStorageUtility, name='dummy_storage')
         sedml = su._dummy_storage_data['sedml']
         # hack a subrepo in there
-        sedml[-1]['embed'] = {
+        sedml[0]['embed'] = {
             '': '_subrepo',
             'rev': '0',
             # XXX note the lack of portal in vhost

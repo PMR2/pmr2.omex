@@ -12,10 +12,10 @@ from pmr2.app.exposure.interfaces import IExposureSourceAdapter
 from cellml.pmr2.urlopener import make_pmr_path
 
 from pmr2.omex.exposure.interfaces import IExposureFileLoader
-from pmr2.omex.exposure.interfaces import IExposureFileViewHandler
+from pmr2.omex.exposure.interfaces import IExposureFileNoteHandler
 from pmr2.omex.exposure.interfaces import DuplicateURLError
 from pmr2.omex.exposure.default import ExposureFileLoader
-from pmr2.omex.exposure.default import ExposureFileViewHandler
+from pmr2.omex.exposure.default import ExposureFileNoteHandler
 from pmr2.omex.exposure.urlopener import LoggedPmrUrlOpener
 
 
@@ -59,15 +59,24 @@ class TrackedSedMLLoader(ExposureFileLoader):
             self.process_sedml(sedml, urn, urlopener)
 
 
-@implementer(IExposureFileViewHandler)
-class OpenCORViewHandler(ExposureFileViewHandler):
+@implementer(IExposureFileNoteHandler)
+class OpenCORNoteHandler(ExposureFileNoteHandler):
     """
-    Handles the OpenCOR view
+    Handles the OpenCOR note
     """
 
-    def handle(self, urn, view, urlopener):
-        if view.filename and view.filename.endswith('.sedml'):
-            resolved = urlopener.urljoin(urn, view.filename)
+    def handle(self, urn, note, urlopener):
+        if note.filename and note.filename.endswith('.sedml'):
+            sa = zope.component.getAdapter(
+                note.__parent__, IExposureSourceAdapter)
+            # rather than processing the file directly, let the urlopener
+            # track the process
+            exposure, workspace, path = sa.source()
+            # need this to resolve.
+            root = make_pmr_path(
+                '/'.join(workspace.getPhysicalPath()), exposure.commit_id, '')
+
+            resolved = urlopener.urljoin(root, note.filename)
             utility = zope.component.queryUtility(
                 IExposureFileLoader, name='sedml')
             if utility:

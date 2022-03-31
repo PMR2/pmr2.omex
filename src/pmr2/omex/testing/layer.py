@@ -41,6 +41,8 @@ class OmexBaseLayer(PloneSandboxLayer):
         portal.workspace['subrepo'] = w
 
         su._loadDir('sedml', join(dirname(__file__), 'sedml'))
+        su._dummy_storage_data['sedml'].append({'model/' + k: v
+            for k, v in su._dummy_storage_data['sedml'][0].items()})
         w = Workspace('sedml')
         w.storage = 'dummy_storage'
         portal.workspace['sedml'] = w

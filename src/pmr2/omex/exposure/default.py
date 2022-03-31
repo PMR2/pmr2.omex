@@ -9,7 +9,7 @@ from pmr2.app.exposure.interfaces import IExposureSourceAdapter
 from cellml.pmr2.urlopener import make_pmr_path
 
 from pmr2.omex.exposure.interfaces import IExposureFileLoader
-from pmr2.omex.exposure.interfaces import IExposureFileViewHandler
+from pmr2.omex.exposure.interfaces import IExposureFileNoteHandler
 from pmr2.omex.exposure.interfaces import DuplicateURLError
 from pmr2.omex.exposure.urlopener import LoggedPmrUrlOpener
 
@@ -38,7 +38,7 @@ class ExposureFileLoader(object):
             if not has_note(exposure_file, view):
                 continue
             utility = zope.component.queryUtility(
-                IExposureFileViewHandler, name=view)
+                IExposureFileNoteHandler, name=view)
             if not utility:
                 continue
             note = zope.component.queryAdapter(exposure_file, name=view)
@@ -58,8 +58,8 @@ class ExposureFileLoader(object):
             pass
 
 
-@implementer(IExposureFileViewHandler)
-class ExposureFileViewHandler(object):
+@implementer(IExposureFileNoteHandler)
+class ExposureFileNoteHandler(object):
     """
     The default view handler, does nothing.
     """

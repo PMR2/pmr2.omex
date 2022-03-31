@@ -22,8 +22,8 @@
       />
 
   <utility
-      provides=".interfaces.IExposureFileViewHandler"
-      factory=".sedml.OpenCORViewHandler"
+      provides=".interfaces.IExposureFileNoteHandler"
+      factory=".sedml.OpenCORNoteHandler"
       name="opencor"
       />
 
