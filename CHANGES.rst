@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.5.0 - Released (2022-05-18)
+-----------------------------
+
+- Correct the implementation for exposure file notes from views, as that
+  is where the data is ultimately stored
+- Correct the implementation of the target for the OpenCOR simulation
+  link.
+
 0.4.0 - Released (2022-03-14)
 -----------------------------
 
