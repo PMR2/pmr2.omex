@@ -33,15 +33,16 @@ def extract_storage_manifest(storage, manifest_path='manifest.xml'):
 
     return parse_manifest(get_storage_manifest(manifest_path))
 
-def _fetch_pathinfo(portal, storage, path):
+def _fetch_pathinfo(portal, storage, path, root=''):
     """
     Assuming this is locally available.
     """
 
+    storage_path = '/'.join((root, path)) if root else path
     try:
-        pinfo = storage.pathinfo(path)
+        pinfo = storage.pathinfo(storage_path)
     except PathNotFoundError:
-        raise StorageArchiveError(path)
+        raise StorageArchiveError(storage_path)
 
     if pinfo.get('external'):
         parsed = urlparse(pinfo['external']['location'])
@@ -53,12 +54,12 @@ def _fetch_pathinfo(portal, storage, path):
             return _fetch_pathinfo(portal, storage, pinfo['external']['path'])
 
     if pinfo['mimetype']():
-        return path, storage.file(path)
+        return path, storage.file(storage_path)
 
     # can't find anything
-    raise StorageArchiveError(path)
+    raise StorageArchiveError(storage_path)
 
-def filelist_generator(storage, paths):
+def filelist_generator(storage, paths, root=''):
     """
     Can be use a list of locations
     """
@@ -69,7 +70,7 @@ def filelist_generator(storage, paths):
         storage.context, name='portal_url').getPortalObject()
 
     for path in paths:
-        yield _fetch_pathinfo(portal, storage, path)
+        yield _fetch_pathinfo(portal, storage, path, root)
 
 def build_omex(storage, manifest_path='manifest.xml'):
     """
@@ -78,7 +79,9 @@ def build_omex(storage, manifest_path='manifest.xml'):
 
     manifest = get_storage_manifest(storage, manifest_path)
     paths = parse_manifest(manifest)
-    entries = filelist_generator(storage, paths)
+    frags = manifest_path.rsplit('/')
+    root = frags[0] if len(frags) > 1 else ''
+    entries = filelist_generator(storage, paths, root)
     if 'manifest.xml' not in paths:
         # inject the incoming manifest.xml as the manifest
         entries = chain(

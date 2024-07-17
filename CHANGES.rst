@@ -6,6 +6,8 @@ Changelog
 
 - Ensure the incoming manifest (no matter what it's named) be included
   in the archive as ``manifest.xml``.
+- Allow omex archive definitions that reside in subdirectories be used
+  to include paths further underneath it.
 
 0.5.0 - Released (2022-05-18)
 -----------------------------
