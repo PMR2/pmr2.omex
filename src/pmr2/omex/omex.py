@@ -1,4 +1,5 @@
 from cStringIO import StringIO
+from itertools import chain
 from os.path import splitext
 from urlparse import urlparse
 from textwrap import dedent
@@ -14,7 +15,7 @@ from pmr2.app.workspace.exceptions import PathNotFoundError
 from pmr2.app.workspace.interfaces import IStorage
 
 
-def extract_storage_manifest(storage, manifest_path='manifest.xml'):
+def get_storage_manifest(storage, manifest_path='manifest.xml'):
     """
     Extract the manifest from a storage
     """
@@ -23,7 +24,14 @@ def extract_storage_manifest(storage, manifest_path='manifest.xml'):
         raw_manifest = storage.file(manifest_path)
     except PathNotFoundError:
         raise ValueError
-    return parse_manifest(raw_manifest)
+    return raw_manifest
+
+def extract_storage_manifest(storage, manifest_path='manifest.xml'):
+    """
+    Extract the manifest from a storage
+    """
+
+    return parse_manifest(get_storage_manifest(manifest_path))
 
 def _fetch_pathinfo(portal, storage, path):
     """
@@ -68,8 +76,16 @@ def build_omex(storage, manifest_path='manifest.xml'):
     Build an archive from a storage backend and a path.
     """
 
-    paths = extract_storage_manifest(storage, manifest_path)
-    return _create_zip(filelist_generator(storage, paths))
+    manifest = get_storage_manifest(storage, manifest_path)
+    paths = parse_manifest(manifest)
+    entries = filelist_generator(storage, paths)
+    if 'manifest.xml' not in paths:
+        # inject the incoming manifest.xml as the manifest
+        entries = chain(
+            entries,
+            (('manifest.xml', manifest,),)
+        )
+    return _create_zip(entries)
     # return _process(storage.file, locations)
 
 def _process(getter, locations):

@@ -86,7 +86,7 @@ class TestOmexExposureUtility(TestCase):
         zf = zipfile.ZipFile(stream, mode='r')
 
         self.assertEqual(sorted(zf.namelist()),
-            ['demo.xml', 'demo_only.xml'])
+            ['demo.xml', 'demo_only.xml', 'manifest.xml'])
 
         # run again with the view.
         dl = OmexExposureDownload(context, request)
@@ -94,7 +94,7 @@ class TestOmexExposureUtility(TestCase):
         stream = StringIO(result)
         zf = zipfile.ZipFile(stream, mode='r')
         self.assertEqual(sorted(zf.namelist()),
-            ['demo.xml', 'demo_only.xml'])
+            ['demo.xml', 'demo_only.xml', 'manifest.xml'])
         self.assertNotEqual(zf.getinfo('demo.xml').external_attr, 0)
 
     def test_generate_omex_ef_no_omex(self):
@@ -137,7 +137,7 @@ class TestOmexExposureUtility(TestCase):
         zf = zipfile.ZipFile(stream, mode='r')
 
         self.assertEqual(sorted(zf.namelist()),
-            ['all_manifest.xml', 'demo.xml', 'metadata.rdf'])
+            ['all_manifest.xml', 'demo.xml', 'manifest.xml', 'metadata.rdf'])
 
     def test_generate_omex_ef_manifest_with_subrepo(self):
         context = self.portal.ec.combine_test3['demo.xml']
@@ -156,7 +156,7 @@ class TestOmexExposureUtility(TestCase):
         zf = zipfile.ZipFile(stream, mode='r')
 
         self.assertEqual(sorted(zf.namelist()), [
-            'demo.xml', 'metadata.rdf', 'module/sub.txt',
+            'demo.xml', 'manifest.xml', 'metadata.rdf', 'module/sub.txt',
             'subrepo_manifest.xml'])
 
         self.assertEqual(zf.open('module/sub.txt').read(), 'A submodule.\n')

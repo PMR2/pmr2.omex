@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.6.0 - Released (2024-07-17)
+-----------------------------
+
+- Ensure the incoming manifest (no matter what it's named) be included
+  in the archive as ``manifest.xml``.
+
 0.5.0 - Released (2022-05-18)
 -----------------------------
 
